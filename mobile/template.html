@@ -6,6 +6,12 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#2a78d6">
 <title>Sócio de Empresas</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sócio">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 :root{
   --bg:#f4f4f1; --card:#fff; --ink:#161614; --ink2:#5d5d58; --line:#e3e3de; --chip:#ecece7;
@@ -237,10 +243,12 @@ const store = (() => {
     set(k, v) { mem[k] = v; try { if (on) localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
   };
 })();
-let FAV = store.get('fav_v1', {});
-let CMP = (store.get('cmp_v1', []) || []).filter(t => POR[t]);
-const salvarFav = () => store.set('fav_v1', FAV);
-const salvarCmp = () => store.set('cmp_v1', CMP);
+// Chaves com prefixo: no GitHub Pages todos os apps do mesmo usuário dividem o mesmo localStorage.
+// As chaves antigas (sem prefixo) são lidas uma vez, para não perder favoritas de quem já usava o arquivo.
+let FAV = store.get('afund_fav_v1', store.get('fav_v1', {}));
+let CMP = (store.get('afund_cmp_v1', store.get('cmp_v1', [])) || []).filter(t => POR[t]);
+const salvarFav = () => store.set('afund_fav_v1', FAV);
+const salvarCmp = () => store.set('afund_cmp_v1', CMP);
 
 /* ---------- aviso com desfazer (posição fixa: não desloca o conteúdo) ---------- */
 let toastTimer = null, toastAcao = null;
@@ -665,6 +673,9 @@ document.addEventListener('change', e => {
   if (e.target.id === 'setor') { ST.setor = e.target.value; ST.limite = 60; desenharLista(); }
   else if (e.target.id === 'ordem') { ST.ordem = e.target.value; ST.limite = 60; desenharLista(); }
 });
+
+// PWA: só quando servido por http(s) (em file:// o navegador não permite service worker)
+try { if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js'); } catch (e) {}
 
 render();
 </script>

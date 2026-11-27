@@ -1,12 +1,15 @@
 """Gera dados/app_mobile.html: uma prévia do app para celular, num único arquivo HTML (sem servidor, sem rede).
 
-Uso:  python gerar_mobile.py
+Uso:  python gerar_mobile.py            -> dados/app_mobile.html (arquivo único)
+      python gerar_mobile.py --site docs  -> site instalável (PWA) para publicar no GitHub Pages
 É um retrato dos dados do banco no momento da geração: atualize os dados no app e gere de novo.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import math
+import shutil
 from pathlib import Path
 
 import consistencia
@@ -113,13 +116,25 @@ def montar_dados() -> dict:
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--site", metavar="PASTA", help="gera um site instalável (PWA): index.html + manifest + service worker + ícones")
+    args = ap.parse_args()
+
     dados = montar_dados()
     # "</" dentro de <script> fecharia a tag antes da hora
     js = json.dumps(dados, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     html = MODELO.read_text(encoding="utf-8").replace("/*__DADOS__*/null", js)
-    SAIDA.parent.mkdir(exist_ok=True)
-    SAIDA.write_text(html, encoding="utf-8")
-    print(f"{len(dados['acoes'])} ações -> {SAIDA} ({SAIDA.stat().st_size / 1024:.0f} KB)")
+    if args.site:
+        pasta = Path(args.site)
+        pasta.mkdir(parents=True, exist_ok=True)
+        for f in (AQUI / "mobile" / "pwa").iterdir():
+            shutil.copy(f, pasta / f.name)
+        saida = pasta / "index.html"
+    else:
+        SAIDA.parent.mkdir(exist_ok=True)
+        saida = SAIDA
+    saida.write_text(html, encoding="utf-8")
+    print(f"{len(dados['acoes'])} ações -> {saida} ({saida.stat().st_size / 1024:.0f} KB)")
 
 
 if __name__ == "__main__":
