@@ -1,0 +1,4 @@
+[server]
+headless = true   # não pede e-mail nem abre o navegador sozinho: acesse http://localhost:8501
+[browser]
+gatherUsageStats = false

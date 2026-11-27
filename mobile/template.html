@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2a78d6">
+<title>Sócio de Empresas</title>
+<style>
+:root{
+  --bg:#f4f4f1; --card:#fff; --ink:#161614; --ink2:#5d5d58; --line:#e3e3de; --chip:#ecece7;
+  --accent:#2a78d6; --good:#0d7a4e; --bad:#c0392b; --neg:#eb6834;
+  --okbg:#e3f5ec; --warnbg:#fff4d6; --warnink:#7a5600; --track:#e9e9e4;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4;
+  --tab:60px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#121211; --card:#1c1c1a; --ink:#f0efec; --ink2:#a9a8a0; --line:#2e2e2b; --chip:#2a2a27;
+    --accent:#3987e5; --good:#3ecf8e; --bad:#ff7b6b; --neg:#d95926;
+    --okbg:#12301f; --warnbg:#3a2f10; --warnink:#f1c76a; --track:#2a2a27;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body.noscroll{overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3{margin:0;line-height:1.2}
+.muted{color:var(--ink2)}
+.small{font-size:13px}
+#tela{padding:12px 12px calc(var(--tab) + 28px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto}
+
+/* barra de abas */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:var(--tab);
+  text-decoration:none;color:var(--ink2);font-size:12px}
+.tabbar a span{font-size:22px;line-height:1}
+.tabbar a[aria-current=page]{color:var(--accent);font-weight:600}
+
+/* topo e controles */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:4px 2px 10px}
+.topo h1{font-size:22px}
+.ctl{display:grid;gap:8px;margin-bottom:10px}
+.inp{width:100%;min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:16px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+select.inp{appearance:none;-webkit-appearance:none;padding-right:30px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink2) 50%),linear-gradient(135deg,var(--ink2) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px;background-repeat:no-repeat}
+.chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--line);background:var(--card);
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip button{border:0;background:none;min-width:30px;min-height:30px;font-size:20px;line-height:1;color:var(--ink2)}
+.hint{font-size:13px;color:var(--ink2);margin:0 2px 8px}
+#contagem{font-weight:600;margin:6px 2px 8px}
+
+/* cartões */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer}
+.card:active{background:var(--chip)}
+.l1{display:flex;align-items:center;gap:8px}
+.tk{font-size:18px;font-weight:700;flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.px{font-weight:600;white-space:nowrap}
+.star{flex:0 0 auto;width:44px;height:44px;margin:-6px -8px -6px 0;border:0;background:none;font-size:24px;color:var(--ink2);border-radius:22px}
+.star.on{color:#eda100}
+.l2{font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 0 8px}
+.mets{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.mets div{display:flex;flex-direction:column;min-width:0}
+.ml{font-size:11px;color:var(--ink2);text-transform:uppercase;letter-spacing:.02em}
+.mv{font-weight:600;font-size:15px;white-space:nowrap}
+.b{font-size:11px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--chip);color:var(--ink2);white-space:nowrap}
+.b.ok{background:var(--okbg);color:var(--good)}
+.b.fin{background:var(--warnbg);color:var(--warnink)}
+.mais{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:600;margin:4px 0 12px}
+details.sobre{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px}
+details.sobre summary{min-height:44px;display:flex;align-items:center;font-weight:600}
+details.sobre p{margin:0 0 10px;font-size:14px;color:var(--ink2)}
+
+/* detalhe */
+#detalhe{position:fixed;inset:0;z-index:30;background:var(--bg);overflow-y:auto;overscroll-behavior:contain;
+  padding-bottom:calc(var(--tab) + 28px + env(safe-area-inset-bottom))}
+#detalhe[hidden]{display:none}
+.dtop{position:sticky;top:0;z-index:5;height:56px;display:flex;align-items:center;gap:6px;padding:0 8px;
+  background:var(--card);border-bottom:1px solid var(--line)}
+.back{min-width:48px;height:44px;border:0;background:none;font-size:15px;color:var(--accent);font-weight:600;border-radius:10px}
+.dtop .dt{flex:1;min-width:0;line-height:1.15}
+.dtop .dt b{display:block;font-size:17px}
+.dtop .dt span{display:block;font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dtop .star{margin:0}
+.dwrap{max-width:720px;margin:0 auto;padding:0 12px}
+.dhead{padding:14px 2px 6px}
+.dprice{font-size:30px;font-weight:700}
+.dsub{font-size:13px;color:var(--ink2);margin:2px 0 10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.stat{display:flex;flex-direction:column;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.stat .mv{font-size:16px}
+.seg{position:sticky;top:56px;z-index:4;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px 0;background:var(--bg)}
+.seg button{min-height:44px;border:1px solid var(--line);background:var(--card);border-radius:10px;font-size:14px}
+.seg button[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.alert{border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14px}
+.alert.warn{background:var(--warnbg);color:var(--warnink)}
+.alert.ok{background:var(--okbg);color:var(--good);font-weight:600}
+h3.sec{font-size:17px;margin:18px 2px 8px}
+h4.grp{font-size:12px;margin:16px 2px 6px;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.checks .b{font-size:13px;padding:6px 10px;border-radius:16px}
+.checks .b.no{background:var(--warnbg);color:var(--warnink)}
+ul.pts{list-style:none;margin:0;padding:0}
+ul.pts li{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;gap:10px;font-size:15px}
+ul.pts li:last-child{border-bottom:0}
+ul.pts li i{font-style:normal;flex:0 0 auto}
+.src{font-size:12px;color:var(--ink2);margin:10px 2px 4px}
+ul.dif{margin:8px 0 0;padding-left:20px}
+ul.dif li{margin-bottom:4px}
+.ir{padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.ir:last-child{border-bottom:0}
+.ir .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.ir .rl{font-size:15px}
+.ir .rv{font-weight:700;font-size:17px;white-space:nowrap}
+.ir .rd{font-size:12.5px;margin-top:2px}
+.rd.good{color:var(--good)} .rd.bad{color:var(--bad)} .rd.neu{color:var(--ink2)}
+.ir .ra{display:none;font-size:13px;color:var(--ink2);margin-top:4px}
+.ir.open .ra{display:block}
+
+/* barras em HTML (texto sempre em tamanho real) */
+.bars{display:grid;gap:6px;padding:8px 0 10px}
+.br{display:grid;grid-template-columns:40px 1fr 90px;gap:8px;align-items:center;font-size:14px}
+.br.w{grid-template-columns:64px 1fr 80px}
+.br .t{height:14px;background:var(--track);border-radius:7px;overflow:hidden}
+.br .f{height:100%;border-radius:7px;background:var(--accent);min-width:2px}
+.br .f.neg{background:var(--neg)}
+.br .f.hat{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.55) 0 3px,transparent 3px 6px)}
+.br .v{text-align:right;font-weight:600;white-space:nowrap}
+.br .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.kpis .stat .ml{display:block;margin-bottom:2px;text-transform:none;letter-spacing:0}
+.pos{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.pos:last-child{border-bottom:0}
+.pos .pt{grid-column:1/3;height:8px;background:var(--track);border-radius:4px;overflow:hidden}
+.pos .pt div{height:100%;background:var(--accent)}
+.pos .pv{font-weight:700;text-align:right}
+
+/* comparador */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);margin:10px 0}
+table.cmp{border-collapse:separate;border-spacing:0;font-size:14px;min-width:100%}
+table.cmp th,table.cmp td{padding:9px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+table.cmp th:first-child,table.cmp td:first-child{position:sticky;left:0;text-align:left;background:var(--card);z-index:1;
+  border-right:1px solid var(--line);font-weight:500;width:112px;min-width:112px;white-space:normal;line-height:1.2}
+table.cmp tr:last-child td{border-bottom:0}
+table.cmp td.best{background:var(--okbg);color:var(--good);font-weight:700}
+.dot{display:inline-block;width:10px;height:10px;border-radius:5px;margin-right:6px}
+.opts{display:grid;gap:6px;margin:8px 0}
+.opt{min-height:46px;text-align:left;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opt:disabled{opacity:.5}
+.cbar{margin:6px 0 14px}
+.cbar h4{margin:0 0 2px;font-size:14px}
+
+/* favoritas */
+textarea.nota{width:100%;min-height:84px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);
+  font-size:16px;resize:vertical;margin:10px 0 6px}
+.acts{display:flex;gap:8px;align-items:center}
+.btn{min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:600}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.salvo{margin-left:auto;font-size:12px;color:var(--ink2);min-width:56px;text-align:right}
+.empty{text-align:center;color:var(--ink2);padding:36px 12px}
+.empty b{display:block;font-size:40px;margin-bottom:6px}
+
+/* aviso desfazer: fixo, não empurra nada */
+#toast{position:fixed;left:12px;right:12px;bottom:calc(var(--tab) + 10px + env(safe-area-inset-bottom));z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:4px 6px 4px 14px;border-radius:12px;
+  background:#222;color:#fff;max-width:520px;margin:0 auto;visibility:hidden;opacity:0;transition:opacity .15s}
+#toast.on{visibility:visible;opacity:1}
+#toast button{border:0;background:none;color:#8fc1ff;font-weight:700;min-height:44px;padding:0 12px}
+</style>
+</head>
+<body>
+<main id="tela"></main>
+<section id="detalhe" hidden></section>
+<div id="toast" role="status" aria-live="polite"><span id="toastmsg"></span><button id="toastbtn" type="button"></button></div>
+<nav class="tabbar" aria-label="Seções">
+  <a href="#/" data-tab="screener"><span>🔎</span>Screener</a>
+  <a href="#/comparar" data-tab="comparar"><span>⚖️</span>Comparar</a>
+  <a href="#/favoritas" data-tab="favoritas"><span>⭐</span>Favoritas</a>
+  <a href="#/sobre" data-tab="sobre"><span>ℹ️</span>Sobre</a>
+</nav>
+
+<script>
+const D = /*__DADOS__*/null;
+
+/* ---------- utilidades ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const semAcento = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const NF = [0, 1, 2].map(c => new Intl.NumberFormat('pt-BR', {minimumFractionDigits: c, maximumFractionDigits: c}));
+const ok = v => v !== null && v !== undefined && !Number.isNaN(v);
+
+function brl(v) {
+  if (!ok(v)) return '—';
+  const a = Math.abs(v);
+  for (const [l, s] of [[1e12, 'tri'], [1e9, 'bi'], [1e6, 'mi'], [1e3, 'mil']]) if (a >= l) return 'R$ ' + NF[1].format(v / l) + ' ' + s;
+  return 'R$ ' + NF[0].format(v);
+}
+function fmt(v, t) {
+  if (!ok(v)) return '—';
+  if (t === 'pct') return NF[1].format(v) + '%';
+  if (t === 'x') return NF[2].format(v);
+  if (t === 'preco') return 'R$ ' + NF[2].format(v);
+  if (t === 'brl') return brl(v);
+  return String(v);
+}
+
+const ACOES = D.acoes;
+const POR = Object.fromEntries(ACOES.map(a => [a.t, a]));
+const IND = D.ind;
+const INDK = Object.fromEntries(IND.map(i => [i.k, i]));
+ACOES.forEach(a => { a.busca = semAcento(a.t + ' ' + a.n); a.socio = a.cs.every(Boolean); });
+const SEM_DIVIDA = new Set(['div_liq_ebitda', 'div_bruta_pl', 'div_liq_pl', 'ev_ebitda']);
+const GRUPOS = ['Valuation', 'Rentabilidade', 'Margens', 'Endividamento', 'Liquidez', 'Crescimento'];
+
+/* ---------- armazenamento (pode falhar/estar vazio: sempre em try/catch) ---------- */
+const store = (() => {
+  const mem = {}; let on = true;
+  try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); } catch (e) { on = false; }
+  return {
+    on,
+    get(k, def) {
+      try { if (on) { const v = localStorage.getItem(k); if (v !== null) return JSON.parse(v); } } catch (e) {}
+      return k in mem ? mem[k] : def;
+    },
+    set(k, v) { mem[k] = v; try { if (on) localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  };
+})();
+let FAV = store.get('fav_v1', {});
+let CMP = (store.get('cmp_v1', []) || []).filter(t => POR[t]);
+const salvarFav = () => store.set('fav_v1', FAV);
+const salvarCmp = () => store.set('cmp_v1', CMP);
+
+/* ---------- aviso com desfazer (posição fixa: não desloca o conteúdo) ---------- */
+let toastTimer = null, toastAcao = null;
+function toast(msg, rotulo, acao) {
+  $('#toastmsg').textContent = msg;
+  const b = $('#toastbtn');
+  b.textContent = rotulo || ''; b.style.display = rotulo ? '' : 'none';
+  toastAcao = acao || null;
+  $('#toast').classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('#toast').classList.remove('on'), rotulo ? 6000 : 2200);
+}
+$('#toastbtn').addEventListener('click', () => {
+  const f = toastAcao; toastAcao = null;
+  $('#toast').classList.remove('on');
+  if (f) f();
+});
+
+/* ---------- favoritas ---------- */
+function marcarEstrelas(t) {
+  $$(`[data-star="${t}"]`).forEach(b => { const on = !!FAV[t]; b.classList.toggle('on', on); b.textContent = on ? '★' : '☆';
+    b.setAttribute('aria-label', on ? 'Remover das favoritas' : 'Adicionar às favoritas'); });
+}
+function alternarFav(t) {
+  if (FAV[t]) {
+    const copia = FAV[t];
+    delete FAV[t]; salvarFav(); marcarEstrelas(t);
+    if (telaDesenhada === 'favoritas') desenharTela();
+    toast(t + ' removida das favoritas', 'Desfazer', () => {
+      FAV[t] = copia; salvarFav(); marcarEstrelas(t);
+      if (telaDesenhada === 'favoritas') desenharTela();
+    });
+  } else {
+    FAV[t] = {nota: ''}; salvarFav(); marcarEstrelas(t);
+    toast(t + ' adicionada às favoritas');
+  }
+}
+
+/* ---------- rotas por # (o botão voltar do celular funciona) ---------- */
+let navegou = 0;
+function rotaAtual() {
+  const [r, p, aba] = location.hash.replace(/^#\/?/, '').split('/');
+  if (r === 'acao' && POR[p]) return {tela: 'screener', acao: p, aba: aba || 'resumo'};
+  if (r === 'comparar' || r === 'favoritas' || r === 'sobre') return {tela: r};
+  return {tela: 'screener'};
+}
+let telaDesenhada = null;
+function render() {
+  const r = rotaAtual();
+  if (r.acao) {  // detalhe abre por cima da tela atual, que fica intacta (rolagem preservada ao voltar)
+    if (!telaDesenhada) { telaDesenhada = 'screener'; marcarAba('screener'); desenharTela(); }
+    navegou++; abrirDetalhe(r.acao, r.aba);
+    return;
+  }
+  const estavaAberto = !$('#detalhe').hidden;
+  fecharDetalhe();
+  marcarAba(r.tela);
+  if (telaDesenhada !== r.tela) { telaDesenhada = r.tela; desenharTela(); window.scrollTo(0, 0); }
+  else if (estavaAberto && r.tela !== 'screener') desenharTela();  // favoritas/comparador podem ter mudado no detalhe
+}
+function marcarAba(tela) {
+  $$('.tabbar a').forEach(a => { if (a.dataset.tab === tela) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+}
+function desenharTela() {
+  ({screener: telaScreener, comparar: telaComparar, favoritas: telaFavoritas, sobre: telaSobre})[telaDesenhada]();
+}
+window.addEventListener('hashchange', render);
+
+/* =================================================================== SCREENER */
+const ST = {q: '', socio: false, on: false, cons: false, setor: '', ordem: 'liq', limite: 60};
+const ORDENS = {
+  liq: ['Maior liquidez', a => a.i.liq_2m, -1],
+  sl: ['Maior consistência', a => (a.sl ? a.sl.ok : null), -1],
+  roe: ['Maior ROE', a => a.i.roe, -1],
+  dy: ['Maior Div. Yield', a => a.i.dy, -1],
+  ml: ['Maior margem líquida', a => a.i.mrg_liq, -1],
+  cr: ['Maior cresc. receita 5a', a => a.i.cresc_rec_5a, -1],
+  pl: ['Menor P/L (positivo)', a => (a.i.pl > 0 ? a.i.pl : null), 1],
+  dle: ['Menor Dív.Líq/EBITDA', a => a.i.div_liq_ebitda, 1],
+  nome: ['Nome (A–Z)', a => a.t, 1],
+};
+function filtrar() {
+  const q = semAcento(ST.q.trim());
+  const lista = ACOES.filter(a =>
+    (!ST.socio || a.socio) && (!ST.on || /^[A-Z]{4}3$/.test(a.t)) && (!ST.cons || (a.sl && a.sl.ok >= 4)) &&
+    (!ST.setor || a.s === ST.setor) && (!q || a.busca.includes(q)));
+  const [, f, dir] = ORDENS[ST.ordem];
+  return lista.sort((x, y) => {
+    const a = f(x), b = f(y);
+    if (!ok(a) && !ok(b)) return 0;
+    if (!ok(a)) return 1;
+    if (!ok(b)) return -1;
+    return (typeof a === 'string' ? a.localeCompare(b) : a - b) * dir;
+  });
+}
+function metrica(rot, val) { return `<div><span class="ml">${rot}</span><span class="mv">${val}</span></div>`; }
+function cartao(a) {
+  const m = a.i, fav = !!FAV[a.t];
+  return `<div class="card" data-t="${a.t}" role="link" tabindex="0" aria-label="Abrir ${a.t}">
+    <div class="l1"><div class="tk">${a.t}${a.socio ? '<span class="b ok">✓ Sócio</span>' : ''}${a.sl ? `<span class="b ${a.sl.ok >= 4 ? 'ok' : ''}" title="Selo de consistência">◆ ${a.sl.ok}/${a.sl.n}</span>` : ''}${a.f ? '<span class="b fin">🏦 à parte</span>' : ''}</div>
+      <div class="px">${fmt(a.c, 'preco')}</div>
+      <button class="star ${fav ? 'on' : ''}" data-star="${a.t}" aria-label="${fav ? 'Remover das favoritas' : 'Adicionar às favoritas'}">${fav ? '★' : '☆'}</button></div>
+    <div class="l2">${esc(a.n)} · ${esc(a.s || '—')}</div>
+    <div class="mets">${metrica('ROE', fmt(m.roe, 'pct'))}${metrica('P/L', fmt(m.pl, 'x'))}${metrica('Yield', fmt(m.dy, 'pct'))}${metrica('Dív/EBITDA', a.f ? 'à parte' : fmt(m.div_liq_ebitda, 'x'))}</div></div>`;
+}
+function desenharLista() {
+  const res = filtrar();
+  $('#contagem').textContent = `${res.length} de ${ACOES.length} ações`;
+  const vis = res.slice(0, ST.limite);
+  $('#lista').innerHTML = vis.length ? vis.map(cartao).join('') : '<div class="empty"><b>🔍</b>Nenhuma ação com esses filtros.</div>';
+  const falta = res.length - vis.length;
+  $('#mais').innerHTML = falta > 0 ? `<button class="mais" id="maisbtn">Mostrar mais (${falta} restantes)</button>` : '';
+  $('#dicasocio').hidden = !ST.socio;
+}
+function telaScreener() {
+  const setores = Object.keys(D.med).sort((a, b) => a.localeCompare(b));
+  $('#tela').innerHTML = `
+    <div class="topo"><h1>Sócio de Empresas</h1><span class="small muted">prévia · dados de ${esc(dataBR(D.gerado_em))}</span></div>
+    <div class="ctl">
+      <input class="inp" id="busca" type="search" placeholder="Buscar ticker ou empresa" value="${esc(ST.q)}" autocomplete="off" enterkeyhint="search">
+      <div class="chips">
+        <button class="chip" id="chipSocio" aria-pressed="${ST.socio}">🤝 Filtro Sócio</button>
+        <button class="chip" id="chipCons" aria-pressed="${ST.cons}">◆ Consistentes (≥4/5)</button>
+        <button class="chip" id="chipOn" aria-pressed="${ST.on}">Só ON (final 3)</button>
+      </div>
+      <div class="row2">
+        <select class="inp" id="setor" aria-label="Setor"><option value="">Todos os setores</option>${setores.map(s => `<option ${s === ST.setor ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+        <select class="inp" id="ordem" aria-label="Ordenar por">${Object.entries(ORDENS).map(([k, v]) => `<option value="${k}" ${k === ST.ordem ? 'selected' : ''}>${v[0]}</option>`).join('')}</select>
+      </div>
+    </div>
+    <p class="hint" id="dicasocio" hidden>ON final 3 · liquidez ≥ R$ 1 mi/dia · ROE &gt; 15% (10% em utilities) · margem líquida &gt; 0 · Dív.Líq/EBITDA &lt; 3. Bancos e seguradoras: “analisar à parte”.</p>
+    <div id="contagem"></div><div id="lista"></div><div id="mais"></div>`;
+  desenharLista();
+}
+function dataBR(iso) {
+  if (!iso) return '—';
+  const [d, h] = iso.split('T');
+  const [y, m, dd] = d.split('-');
+  return `${dd}/${m}/${y} ${(h || '').slice(0, 5)}`.trim();
+}
+
+/* =================================================================== DETALHE */
+function mediana(a, k) { return a.s && D.med[a.s] ? D.med[a.s][k] : null; }
+function delta(a, k) {
+  const ind = INDK[k], v = a.i[k], med = mediana(a, k);
+  if (!ok(v) || !ok(med) || (ind.p && v <= 0) || k === 'liq_2m') return null;
+  const d = v - med;
+  let cls = 'neu', palavra = '';
+  if (ind.m && d !== 0) { const melhor = ind.m === 'alto' ? d > 0 : d < 0; cls = melhor ? 'good' : 'bad'; palavra = melhor ? ' · melhor' : ' · pior'; }
+  return {cls, txt: `${d >= 0 ? '▲ +' : '▼ −'}${NF[1].format(Math.abs(d))}${ind.t === 'pct' ? ' p.p.' : ''} vs setor (${fmt(med, ind.t)})${palavra}`};
+}
+function painelSelo(a) {
+  if (!a.sl) return '';
+  let h = `<h3 class="sec">Selo de consistência: ${a.sl.ok} de ${a.sl.n}</h3><div class="box">`;
+  a.sl.t.forEach(([nome, ok, det], i) => {
+    h += `<div class="ir" data-ajuda><div class="top"><span class="rl">${ok === null ? '➖' : ok ? '✅' : '❌'} ${esc(nome)}</span></div>
+      <div class="rd neu">${esc(det)}</div><div class="ra">${esc(D.criterios_hist[i].d)}</div></div>`;
+  });
+  return h + '</div><p class="src">Testes sobre até 10 anos de balanços. ➖ = não se aplica ou histórico curto. Toque em um teste para ver a regra.</p>';
+}
+function dResumo(a) {
+  let h = '<h3 class="sec">O que a empresa faz</h3>';
+  if (a.ia) {
+    h += `<div class="box" style="padding:12px 14px"><p style="margin:0">${esc(a.ia.o_que_faz)}</p>
+      ${a.ia.diferenciais.length ? '<p style="margin:10px 0 0"><b>Diferenciais competitivos</b></p><ul class="dif">' + a.ia.diferenciais.map(d => `<li>${esc(d)}</li>`).join('') + '</ul>' : ''}</div>
+      <p class="src">🧠 Gerado por IA em ${esc(a.ia.em)} a partir do conhecimento geral do modelo — pode estar desatualizado ou impreciso. Confirme no Formulário de Referência da empresa.</p>`;
+  } else {
+    h += '<div class="alert warn">Esta ação ainda não tem resumo de negócio. Gere no app do computador (aba Resumo → “Gerar resumo com IA”) e exporte a prévia de novo.</div>';
+  }
+  h += '<h3 class="sec">Checklist de sócio</h3><div class="checks">' +
+    D.criterios.map((c, i) => `<span class="b ${a.cs[i] ? 'ok' : 'no'}">${a.cs[i] ? '✓' : '✗'} ${esc(c)}</span>`).join('') + '</div>';
+  if (a.f) h += '<p class="src">Dív.Líq/EBITDA não se aplica a bancos e seguradoras — critério dispensado.</p>';
+  if (a.socio) h += '<div class="alert ok">Passa no Filtro Sócio (parâmetros padrão).</div>';
+  h += painelSelo(a);
+  const lista = (itens, ia, icone) => {
+    const li = x => `<li><i>${icone}</i><span>${esc(x)}</span></li>`;
+    return (itens.length ? `<div class="src">📊 Pelos números</div><div class="box" style="padding:0"><ul class="pts">${itens.map(li).join('')}</ul></div>` : '<p class="src">📊 Nenhum destaque claro nos indicadores.</p>') +
+      (ia && ia.length ? `<div class="src">🧠 Pelo negócio (IA)</div><div class="box" style="padding:0"><ul class="pts">${ia.map(li).join('')}</ul></div>` : '');
+  };
+  h += '<h3 class="sec">✅ Pontos fortes</h3>' + lista(a.fo, a.ia && a.ia.pontos_fortes, '🟢');
+  h += '<h3 class="sec">⚠️ Pontos fracos e atenção</h3>' + lista(a.fr, a.ia && a.ia.pontos_fracos, '🟠');
+  h += '<p class="src">Os pontos 📊 seguem regras fixas (ex.: ROE ≥ 15% é forte, Dív.Líq/EBITDA &gt; 3 é fraco) e comparam com a mediana do setor. São um ponto de partida, não um veredito.</p>';
+  return h;
+}
+function dNumeros(a) {
+  let h = '';
+  for (const g of GRUPOS) {
+    h += `<h4 class="grp">${g}</h4><div class="box">`;
+    for (const ind of IND.filter(i => i.g === g)) {
+      const k = ind.k, naoSeAplica = a.f && SEM_DIVIDA.has(k);
+      const d = naoSeAplica ? null : delta(a, k);
+      h += `<div class="ir" data-ajuda><div class="top"><span class="rl">${esc(ind.r)}</span><span class="rv">${naoSeAplica ? 'n/a' : fmt(a.i[k], ind.t)}</span></div>` +
+        (d ? `<div class="rd ${d.cls}">${d.txt}</div>` : '') + (ind.a ? `<div class="ra">${esc(ind.a)}</div>` : '') + '</div>';
+    }
+    h += '</div>';
+  }
+  return h + '<p class="src">Toque em um indicador para ver o que ele significa.</p>';
+}
+function barras(anos, vals, fmtv, neutro) {  // neutro: valor negativo não é ruim (ex.: dívida líquida < 0 = caixa)
+  const mx = Math.max(...vals.map(v => (ok(v) ? Math.abs(v) : 0)), 1e-9);
+  return '<div class="bars">' + anos.map((ano, i) => {
+    const v = vals[i];
+    if (!ok(v)) return `<div class="br"><span>${ano}</span><span class="t"></span><span class="v muted">—</span></div>`;
+    const w = Math.max(Math.abs(v) / mx * 100, v === 0 ? 0 : 2);
+    return `<div class="br"><span>${ano}</span><span class="t"><span class="f ${v < 0 && !neutro ? 'neg' : ''}" style="display:block;width:${w}%"></span></span><span class="v">${fmtv(v)}</span></div>`;
+  }).join('') + '</div>';
+}
+function cagr(vals) {
+  const v = vals.filter(ok);
+  if (v.length < 3 || vals.length < 3 || !(vals[0] > 0) || !(vals[vals.length - 1] > 0)) return null;
+  return (Math.pow(vals[vals.length - 1] / vals[0], 1 / (vals.length - 1)) - 1) * 100;
+}
+function dHist(a) {
+  const h = a.h;
+  if (!h) return '<div class="alert warn">Sem balanços anuais desta empresa na CVM.</div>';
+  const n = h.a.length, pos = h.l.filter(v => ok(v) && v > 0).length;
+  const per = `${h.a[0]}–${h.a[n - 1]}`;
+  const bi = v => 'R$ ' + NF[2].format(v) + ' bi';
+  let x = `<div class="kpis"><div class="stat"><span class="ml">Anos com lucro</span><span class="mv">${pos} de ${n}</span></div>
+    <div class="stat"><span class="ml">Lucro ao ano</span><span class="mv">${fmt(cagr(h.l), 'pct')}</span></div>
+    <div class="stat"><span class="ml">Receita ao ano</span><span class="mv">${fmt(cagr(h.r), 'pct')}</span></div></div>
+    <p class="src" style="margin-top:0">Crescimento composto ${per}.</p>` + painelSelo(a);
+  x += `<h3 class="sec">${a.f ? 'Receita da intermediação' : 'Receita'}</h3><div class="box">${barras(h.a, h.r, bi)}</div>`;
+  x += `<h3 class="sec">Lucro líquido (controladores)</h3><div class="box">${barras(h.a, h.l, bi)}</div>`;
+  x += `<h3 class="sec">ROE</h3><div class="box">${barras(h.a, h.roe, v => fmt(v, 'pct'))}</div>`;
+  x += `<h3 class="sec">Margem líquida</h3><div class="box">${barras(h.a, h.ml, v => fmt(v, 'pct'))}</div>`;
+  if (!a.f) x += `<h3 class="sec">Dívida líquida / patrimônio</h3><div class="box">${barras(h.a, h.dl, v => fmt(v, 'x'), true)}</div>
+    <p class="src">Negativo = mais caixa do que dívida.</p>`;
+  const sec = (tit, arr, f, nota, neutro) => `<h3 class="sec">${tit}</h3><div class="box">${barras(h.a, arr, f, neutro)}</div>${nota ? `<p class="src">${nota}</p>` : ''}`;
+  if (!a.f) {
+    x += sec('Dív.Líq/EBITDA', h.de, v => fmt(v, 'x'), 'Anos de EBITDA para quitar a dívida líquida. Negativo = caixa líquido; vazio = EBITDA não positivo.', true);
+    x += sec('EBITDA', h.eb, bi);
+    x += sec('Caixa das operações', h.fc, bi, 'Lucro bom precisa virar caixa: compare com o lucro líquido acima.');
+    x += sec('Fluxo de caixa livre', h.fl, bi, 'Caixa das operações menos investimentos em imobilizado e intangível.');
+  }
+  if (h.dv.some(ok)) {
+    x += sec('Dividendos e JCP pagos', h.dv, bi);
+    x += sec('Payout (% do lucro)', h.po, v => fmt(v, 'pct'), 'Acima de 100% = pagou mais do que lucrou no ano.');
+  }
+  return x + '<p class="src">Fonte: DFPs anuais da CVM. Valores nominais, sem correção pela inflação.</p>';
+}
+function dSetor(a) {
+  if (!a.s) return '<div class="alert warn">Setor indisponível.</div>';
+  let h = `<p class="src" style="margin-top:12px">Setor <b>${esc(a.s)}</b>. A barra mostra quantas empresas do setor esta ação supera (considerando o que é “melhor” em cada indicador).</p><div class="box">`;
+  for (const ind of IND) {
+    if (ind.k === 'liq_2m') continue;
+    const k = ind.k, p = a.pc[k], med = mediana(a, k);
+    if (a.f && SEM_DIVIDA.has(k)) continue;
+    h += `<div class="pos"><span>${esc(ind.r)}</span><span class="pv">${ok(p) ? 'supera ' + NF[0].format(p) + '%' : '—'}</span>
+      <span class="muted small" style="grid-column:1/3">esta ação ${fmt(a.i[k], ind.t)} · mediana ${fmt(med, ind.t)}</span>
+      ${ok(p) ? `<span class="pt"><div style="width:${p}%"></div></span>` : ''}</div>`;
+  }
+  return h + '</div>';
+}
+const ABAS = [['resumo', 'Resumo', dResumo], ['num', 'Números', dNumeros], ['hist', 'Histórico', dHist], ['setor', 'Setor', dSetor]];
+function abrirDetalhe(t, aba) {
+  const a = POR[t], d = $('#detalhe');
+  const abaOk = ABAS.some(x => x[0] === aba) ? aba : 'resumo';
+  const mudouAcao = d.dataset.t !== t;
+  if (mudouAcao || d.hidden) {
+    d.dataset.t = t; d.hidden = false; document.body.classList.add('noscroll');
+    d.innerHTML = `<header class="dtop"><button class="back" id="voltar" aria-label="Voltar">‹ Voltar</button>
+      <div class="dt"><b>${a.t}</b><span>${esc(a.n)}</span></div>
+      <button class="star ${FAV[t] ? 'on' : ''}" data-star="${t}" aria-label="Favoritar">${FAV[t] ? '★' : '☆'}</button></header>
+      <div class="dwrap"><div class="dhead"><div class="dprice">${fmt(a.c, 'preco')}</div>
+        <div class="dsub">${esc(a.tp)} · ${esc(a.s || 'setor n/d')}${a.ss ? ' › ' + esc(a.ss) : ''}<br>último balanço: ${esc(a.ub || 'n/d')}</div>
+        ${a.f ? '<div class="alert warn">🏦 <b>Banco/seguradora — analisar à parte.</b> Dív./EBITDA e indicadores de dívida não se aplicam.</div>' : ''}
+        <div class="stats">
+          <div class="stat"><span class="ml">Valor de mercado</span><span class="mv">${brl(a.vm)}</span></div>
+          <div class="stat"><span class="ml">Lucro 12m</span><span class="mv">${brl(a.lu)}</span></div>
+          <div class="stat"><span class="ml">Receita 12m</span><span class="mv">${brl(a.re)}</span></div>
+          <div class="stat"><span class="ml">Patrimônio líq.</span><span class="mv">${brl(a.pa)}</span></div></div>
+        <button class="btn" id="aoComparar" style="width:100%">⚖️ Adicionar ao comparador</button></div>
+        <div class="seg" role="tablist" id="seg"></div><div id="corpo"></div></div>`;
+    d.scrollTop = 0;
+  }
+  $('#seg', d).innerHTML = ABAS.map(([k, r]) => `<button role="tab" data-aba="${k}" aria-selected="${k === abaOk}">${r}</button>`).join('');
+  $('#corpo', d).innerHTML = ABAS.find(x => x[0] === abaOk)[2](a);
+  d.dataset.atual = abaOk;
+}
+function fecharDetalhe() {
+  const d = $('#detalhe');
+  if (d.hidden) return;
+  d.hidden = true; d.dataset.t = ''; document.body.classList.remove('noscroll');
+}
+
+/* =================================================================== COMPARAR */
+const COR = i => `var(--s${(i % 5) + 1})`;
+function melhorDe(k, vals) {
+  const ind = INDK[k];
+  if (!ind.m) return -1;
+  const v = vals.map(x => (ok(x) && !(ind.p && x <= 0) ? x : null));
+  if (v.filter(ok).length < 2) return -1;
+  const alvo = ind.m === 'alto' ? Math.max(...v.filter(ok)) : Math.min(...v.filter(ok));
+  return v.indexOf(alvo);
+}
+function telaComparar() {
+  const fav = Object.keys(FAV).filter(t => POR[t] && !CMP.includes(t));
+  let h = `<div class="topo"><h1>Comparar</h1><span class="small muted">de 2 a 5 ações</span></div>
+    <div class="chips" style="flex-wrap:wrap;overflow:visible">${CMP.map((t, i) => `<span class="chip"><span class="dot" style="background:${COR(i)};margin:0"></span>${t}<button data-rmcmp="${t}" aria-label="Tirar ${t}">×</button></span>`).join('')}</div>
+    <div class="ctl" style="margin-top:10px"><input class="inp" id="cmpq" type="search" placeholder="Buscar ação para adicionar" autocomplete="off"></div>
+    <div id="cmpres" class="opts"></div>
+    ${fav.length && CMP.length < 5 ? `<p class="hint">Das favoritas:</p><div class="chips" style="flex-wrap:wrap;overflow:visible">${fav.map(t => `<button class="chip" data-addcmp="${t}">+ ${t}</button>`).join('')}</div>` : ''}`;
+  if (CMP.length < 2) h += `<div class="empty"><b>⚖️</b>Escolha pelo menos 2 ações para comparar.</div>`;
+  else {
+    const L = CMP.map(t => POR[t]);
+    const linha = (rot, cels, melhor) => `<tr><td>${rot}</td>${cels.map((c, i) => `<td class="${i === melhor ? 'best' : ''}">${c}</td>`).join('')}</tr>`;
+    h += `<div class="tw"><table class="cmp"><thead><tr><th></th>${L.map((a, i) => `<th><span class="dot" style="background:${COR(i)}"></span>${a.t}</th>`).join('')}</tr></thead><tbody>
+      ${linha('Cotação', L.map(a => fmt(a.c, 'preco')), -1)}
+      ${IND.map(ind => linha(esc(ind.r), L.map(a => (a.f && SEM_DIVIDA.has(ind.k) ? 'n/a' : fmt(a.i[ind.k], ind.t))), melhorDe(ind.k, L.map(a => (a.f && SEM_DIVIDA.has(ind.k) ? null : a.i[ind.k]))))).join('')}
+      </tbody></table></div><p class="src">Verde = melhor valor da linha. P/L etc. negativos (prejuízo) não entram na disputa. Role a tabela para o lado.</p>`;
+    h += '<h3 class="sec">Gráficos</h3>';
+    for (const k of ['roe', 'mrg_liq', 'dy', 'pl', 'div_liq_ebitda']) {
+      const ind = INDK[k];
+      const vals = L.map(a => (a.f && SEM_DIVIDA.has(k)) || !ok(a.i[k]) || (ind.p && a.i[k] <= 0) ? null : a.i[k]);
+      const mx = Math.max(...vals.map(v => (ok(v) ? Math.abs(v) : 0)), 1e-9);
+      h += `<div class="cbar"><h4>${esc(ind.r)}</h4><div class="box"><div class="bars">${L.map((a, i) => ok(vals[i])
+        ? `<div class="br w"><span class="n">${a.t}</span><span class="t"><span class="f ${vals[i] < 0 ? 'hat' : ''}" style="display:block;width:${Math.max(Math.abs(vals[i]) / mx * 100, 2)}%;background:${COR(i)}"></span></span><span class="v">${fmt(vals[i], ind.t)}</span></div>`
+        : `<div class="br w"><span class="n">${a.t}</span><span class="t"></span><span class="v muted">n/d</span></div>`).join('')}</div></div></div>`;
+    }
+  }
+  $('#tela').innerHTML = h;
+  cmpResultados('');
+}
+function cmpResultados(q) {
+  const el = $('#cmpres');
+  if (!el) return;
+  const s = semAcento(q.trim());
+  if (!s) { el.innerHTML = ''; return; }
+  const achados = ACOES.filter(a => a.busca.includes(s)).slice(0, 6);
+  el.innerHTML = achados.length
+    ? achados.map(a => `<button class="opt" data-addcmp="${a.t}" ${CMP.includes(a.t) || CMP.length >= 5 ? 'disabled' : ''}><b>${a.t}</b> — ${esc(a.n)}</button>`).join('')
+    : '<p class="hint">Nada encontrado.</p>';
+}
+function addCmp(t) {
+  if (!POR[t] || CMP.includes(t)) return;
+  if (CMP.length >= 5) { toast('O comparador aceita até 5 ações.'); return; }
+  CMP.push(t); salvarCmp();
+  if (telaDesenhada === 'comparar' && $('#detalhe').hidden) desenharTela();
+  else toast(t + ' no comparador (' + CMP.length + ')');
+}
+
+/* =================================================================== FAVORITAS */
+let notaTimer = {};
+function telaFavoritas() {
+  const ts = Object.keys(FAV).filter(t => POR[t]);
+  let h = '<div class="topo"><h1>Favoritas</h1><span class="small muted">por setor</span></div>';
+  if (!store.on) h += '<div class="alert warn">Este navegador não permite guardar dados: as favoritas e notas somem ao fechar a página.</div>';
+  if (!ts.length) h += '<div class="empty"><b>⭐</b>Nenhuma favorita ainda.<br>Toque na estrela ☆ de uma ação para guardá-la aqui.</div>';
+  const grupos = {};
+  ts.forEach(t => (grupos[POR[t].s || 'Setor não identificado'] ||= []).push(t));
+  for (const s of Object.keys(grupos).sort((a, b) => a.localeCompare(b))) {
+    h += `<h3 class="sec">🏭 ${esc(s)} (${grupos[s].length})</h3>`;
+    for (const t of grupos[s].sort()) {
+      const a = POR[t];
+      h += `<div class="card" style="cursor:default"><div class="l1"><div class="tk">${t}${a.socio ? '<span class="b ok">✓ Sócio</span>' : ''}${a.f ? '<span class="b fin">🏦 à parte</span>' : ''}</div><div class="px">${fmt(a.c, 'preco')}</div></div>
+        <div class="l2">${esc(a.n)}</div>
+        <div class="mets">${metrica('ROE', fmt(a.i.roe, 'pct'))}${metrica('P/L', fmt(a.i.pl, 'x'))}${metrica('Yield', fmt(a.i.dy, 'pct'))}${metrica('Dív/EBITDA', a.f ? 'à parte' : fmt(a.i.div_liq_ebitda, 'x'))}</div>
+        <textarea class="nota" data-nota="${t}" placeholder="Notas pessoais: por que quero ser sócio? O que vigiar?" aria-label="Notas de ${t}">${esc(FAV[t].nota || '')}</textarea>
+        <div class="acts"><button class="btn pri" data-abrir="${t}">Analisar</button><button class="btn" data-rmfav="${t}">Remover</button><span class="salvo" data-salvo="${t}"></span></div></div>`;
+    }
+  }
+  $('#tela').innerHTML = h;
+}
+
+/* =================================================================== SOBRE */
+function telaSobre() {
+  $('#tela').innerHTML = `<div class="topo"><h1>Sobre esta prévia</h1></div>
+    <div class="box" style="padding:14px"><p style="margin-top:0"><b>É um retrato.</b> Os dados foram gerados em <b>${esc(dataBR(D.gerado_em))}</b> a partir do app do computador. Para atualizar, rode <code>python gerar_mobile.py</code> lá e abra o arquivo novo.</p>
+    <p><b>Funciona sem internet</b>, mas não busca cotações nem gera resumos de IA — só mostra os que já estavam salvos.</p>
+    <p><b>Favoritas, notas e comparador</b> ficam guardados só neste navegador (não sincronizam com o app do computador).</p>
+    <p><b>Filtro Sócio</b> (fixo nesta prévia): ações ON final 3, liquidez ≥ R$ 1 mi/dia, ROE &gt; 15% (10% em energia, saneamento e gás), margem líquida &gt; 0 e Dív.Líq/EBITDA &lt; 3. Bancos e seguradoras: sem Dív./EBITDA, “analisar à parte”.</p>
+    <p><b>Selo de consistência (◆ 0–5):</b> quantos de 5 testes de história a empresa passa em até 10 anos de balanços — lucro quase sempre positivo, lucro crescente, ROE ≥ 15% em 4 dos últimos 5 anos, Dív.Líq/EBITDA &lt; 3 em 4 dos últimos 5 e caixa operacional positivo em 4 dos últimos 5 (os dois últimos não se aplicam a bancos).</p>
+    <p><b>Fontes:</b> fundamentus.com.br e dados abertos da CVM.</p>
+    <p style="margin-bottom:0">Ferramenta de estudo — <b>não é recomendação de investimento</b>. Os dados podem ter erros ou atrasos.</p></div>`;
+}
+
+/* =================================================================== EVENTOS (delegação) */
+document.addEventListener('click', e => {
+  const t = e.target;
+  const star = t.closest('[data-star]');
+  if (star) { e.stopPropagation(); alternarFav(star.dataset.star); return; }
+  const card = t.closest('.card[data-t]');
+  if (card && !t.closest('button')) { location.hash = '#/acao/' + card.dataset.t; return; }
+  if (t.closest('#voltar')) { if (navegou > 0 && history.length > 1) history.back(); else location.hash = '#/'; return; }
+  const aba = t.closest('button[data-aba]');
+  if (aba) { const d = $('#detalhe'); history.replaceState(null, '', `#/acao/${d.dataset.t}/${aba.dataset.aba}`); abrirDetalhe(d.dataset.t, aba.dataset.aba); return; }
+  if (t.closest('#aoComparar')) { addCmp($('#detalhe').dataset.t); return; }
+  const ir = t.closest('[data-ajuda]');
+  if (ir) { ir.classList.toggle('open'); return; }
+  if (t.closest('#chipSocio')) { ST.socio = !ST.socio; ST.limite = 60; $('#chipSocio').setAttribute('aria-pressed', ST.socio); desenharLista(); return; }
+  if (t.closest('#chipCons')) { ST.cons = !ST.cons; ST.limite = 60; $('#chipCons').setAttribute('aria-pressed', ST.cons); desenharLista(); return; }
+  if (t.closest('#chipOn')) { ST.on = !ST.on; ST.limite = 60; $('#chipOn').setAttribute('aria-pressed', ST.on); desenharLista(); return; }
+  if (t.closest('#maisbtn')) { ST.limite += 60; desenharLista(); return; }
+  const add = t.closest('[data-addcmp]');
+  if (add) { addCmp(add.dataset.addcmp); return; }
+  const rm = t.closest('[data-rmcmp]');
+  if (rm) { CMP = CMP.filter(x => x !== rm.dataset.rmcmp); salvarCmp(); desenharTela(); return; }
+  const ab = t.closest('[data-abrir]');
+  if (ab) { location.hash = '#/acao/' + ab.dataset.abrir; return; }
+  const rf = t.closest('[data-rmfav]');
+  if (rf) { alternarFav(rf.dataset.rmfav); return; }
+});
+document.addEventListener('keydown', e => {
+  const card = e.target.closest && e.target.closest('.card[data-t]');
+  if (card && e.target === card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); location.hash = '#/acao/' + card.dataset.t; }
+});
+let buscaTimer = null;
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'busca') { clearTimeout(buscaTimer); buscaTimer = setTimeout(() => { ST.q = t.value; ST.limite = 60; desenharLista(); }, 120); }
+  else if (t.id === 'cmpq') cmpResultados(t.value);
+  else if (t.dataset && t.dataset.nota) {
+    const k = t.dataset.nota;
+    clearTimeout(notaTimer[k]);
+    const lbl = $(`[data-salvo="${k}"]`);
+    if (lbl) lbl.textContent = '…';
+    notaTimer[k] = setTimeout(() => { if (FAV[k]) { FAV[k].nota = t.value; salvarFav(); } if (lbl) lbl.textContent = 'salvo ✓'; }, 400);
+  }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'setor') { ST.setor = e.target.value; ST.limite = 60; desenharLista(); }
+  else if (e.target.id === 'ordem') { ST.ordem = e.target.value; ST.limite = 60; desenharLista(); }
+});
+
+render();
+</script>
+</body>
+</html>

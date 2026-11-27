@@ -1,0 +1,8 @@
+streamlit>=1.40
+pandas>=2.2
+numpy
+requests
+beautifulsoup4
+lxml
+plotly>=5.20
+anthropic
