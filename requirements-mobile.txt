@@ -1,0 +1,6 @@
+# Só o necessário para coletar dados e gerar a prévia mobile (sem Streamlit nem Plotly): usado no GitHub Actions
+pandas>=2.2
+numpy
+requests
+beautifulsoup4
+lxml

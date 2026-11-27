@@ -71,6 +71,22 @@ das operações vs. lucro, fluxo de caixa livre, dividendos pagos e payout. Divi
 podem faltar em algumas empresas. Depois de atualizar o app, baixe o histórico de novo (barra lateral): ele agora
 também relaciona cada ação à sua empresa na CVM.
 
+### App no celular (PWA no GitHub Pages)
+
+A prévia mobile também é publicada como **PWA** (instalável, abre offline), como um app de tela inicial:
+**https://mauroagcs.github.io/analise-fundamentalista/**. No celular, abra o link e use *Adicionar à Tela de
+Início*. O site fica na pasta `docs/` (Pages: branch `main`, pasta `/docs`) e é um retrato dos dados da última
+publicação (a página mostra a data). Favoritas e notas ficam no navegador do aparelho.
+
+Para atualizar o site com dados novos, um comando (precisa de `git` autenticado):
+
+```bash
+./publicar_site.sh      # atualizar.py -> gerar_mobile.py --site docs -> commit -> push
+```
+
+`python atualizar.py` atualiza o banco sem abrir o Streamlit (só baixa o que está velho; `--forcar` baixa tudo).
+`python gerar_mobile.py --site PASTA` gera o site completo (HTML + manifest + service worker + ícones).
+
 ### Prévia para celular (HTML)
 
 ```bash
